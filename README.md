@@ -18,7 +18,7 @@ Program to find the nearest customer(within 100kms) from the Intercomm Dublin Of
 * Configuration\
     Android Studio 3.5\
     compileSdkVersion = 29\
-    minSdkVersion = 15\
+    minSdkVersion = 21\
     targetSdkVersion = 29\
     buildtoolVersion = '29.0.2'
 * Dependencies\
