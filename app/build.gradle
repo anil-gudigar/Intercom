@@ -1,0 +1,106 @@
+apply plugin: 'com.android.application'
+apply plugin: 'jacoco'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-allopen'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+android {
+    signingConfigs {
+        release {
+            storeFile file(appVersion)
+            storePassword 'intercom'
+            keyAlias = 'intercom'
+            keyPassword 'intercom'
+        }
+    }
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildtoolVersion
+    dataBinding {
+        enabled = true
+        enabledForTests = true
+    }
+    defaultConfig {
+        applicationId rootProject.appID
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionCode rootProject.appVersionCode
+        versionName rootProject.appVersion
+        vectorDrawables.useSupportLibrary true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            testCoverageEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            applicationIdSuffix ".debug"
+            versionNameSuffix '.debug'
+            minifyEnabled false
+            testCoverageEnabled true
+            testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    // Always show the result of every unit test when running via command line, even if it passes.
+    testOptions.unitTests {
+        includeAndroidResources = true
+    }
+}
+
+jacoco {
+    toolVersion = "$rootProject.jacocoVersion"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
+    implementation "androidx.core:core-ktx:$rootProject.ktxVersion"
+    implementation "androidx.fragment:fragment-ktx:$rootProject.fragmentVersion"
+    implementation "com.google.android.material:material:$rootProject.materialVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+
+    // Testing dependencies
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    testImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+
+    androidTestImplementation "androidx.test:core:$rootProject.testCoreVersion"
+    androidTestImplementation "androidx.test:runner:$rootProject.testRunnerVersion"
+    androidTestImplementation "androidx.test:rules:$rootProject.testRulesVersion"
+
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$rootProject.espressoVersion"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.testExtJunit"
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:$rootProject.uiAutomatorVersion"
+
+    androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
+    androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoAndroidVersion"
+}
+
+
+
+// we need all open to run tests which  a we enable only for debug builds.
+project.tasks.whenTaskAdded {
+    if (it.name == "testReleaseUnitTest") {
+        it.enabled = false
+    }
+}
